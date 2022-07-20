@@ -36,17 +36,19 @@ class DetectionDatset(data.Dataset):
         Returns:
             tuple: Tuple (image, annotations (target)).
         """
+        
         img_info = self._parser.img_infos[index]
         target = dict(img_idx=index, img_size=(img_info['width'], img_info['height']))
         if self._parser.has_labels:
             ann = self._parser.get_ann_info(index)
             target.update(ann)
-
+        
         img_path = self.data_dir / img_info['file_name']
         img = Image.open(img_path).convert('RGB')
         if self.transform is not None:
             img, target = self.transform(img, target)
-
+        
+        target['file_name'] = int(img_info['file_name'][:-4])
         return img, target
 
     def __len__(self):

@@ -6,12 +6,12 @@ from ssl import ALERT_DESCRIPTION_DECOMPRESSION_FAILURE
 import numpy as np
 from pycocotools.coco import COCO
 from .parser import Parser
-from .parser_config import CocoParserCfg
+from .parser_config import AirParserCfg
 
 
-class CocoParser(Parser):
+class AirParser(Parser):
 
-    def __init__(self, cfg: CocoParserCfg):
+    def __init__(self, cfg: AirParserCfg):
         super().__init__(
             bbox_yxyx=cfg.bbox_yxyx,
             has_labels=cfg.has_labels,

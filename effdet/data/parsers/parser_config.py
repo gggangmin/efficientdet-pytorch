@@ -4,7 +4,7 @@ Copyright 2020 Ross Wightman
 """
 from dataclasses import dataclass
 
-__all__ = ['CocoParserCfg', 'OpenImagesParserCfg', 'VocParserCfg']
+__all__ = ['CocoParserCfg', 'OpenImagesParserCfg', 'VocParserCfg', 'AirParserCfg']
 
 
 @dataclass
@@ -16,7 +16,16 @@ class CocoParserCfg:
     bbox_yxyx: bool = True
     min_img_size: int = 32
     ignore_empty_gt: bool = False
-
+    
+@dataclass
+class AirParserCfg:
+    ann_filename: str  # absolute path
+    include_masks: bool = False
+    include_bboxes_ignore: bool = False
+    has_labels: bool = True
+    bbox_yxyx: bool = True
+    min_img_size: int = 32
+    ignore_empty_gt: bool = False
 
 @dataclass
 class VocParserCfg:

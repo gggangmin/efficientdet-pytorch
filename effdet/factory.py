@@ -24,7 +24,7 @@ def create_model_from_config(
 
     # Config overrides, override some config values via kwargs.
     overrides = (
-        'redundant_bias', 'label_smoothing', 'legacy_focal', 'jit_loss', 'soft_nms', 'max_det_per_image', 'image_size')
+        'redundant_bias', 'label_smoothing', 'legacy_focal', 'jit_loss', 'soft_nms', 'max_det_per_image', 'image_size', 'max_detection_points')
     for ov in overrides:
         value = kwargs.pop(ov, None)
         if value is not None:
@@ -38,7 +38,7 @@ def create_model_from_config(
     # pretrained weights are always spec'd for original config, load them before we change the model
     if pretrained:
         load_pretrained(model, config.url)
-
+    
     # reset model head if num_classes doesn't match configs
     if num_classes is not None and num_classes != config.num_classes:
         model.reset_head(num_classes=num_classes)

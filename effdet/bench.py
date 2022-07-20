@@ -3,7 +3,7 @@
 Hacked together by Ross Wightman
 """
 from typing import Optional, Dict, List
-
+import time
 import torch
 import torch.nn as nn
 
@@ -40,6 +40,8 @@ def _post_process(
 
         num_classes (int): number of output classes
     """
+    #print(len(cls_outputs),cls_outputs[0].shape,len(box_outputs),box_outputs[0].shape,num_levels,num_classes)
+
     batch_size = cls_outputs[0].shape[0]
     cls_outputs_all = torch.cat([
         cls_outputs[level].permute(0, 2, 3, 1).reshape([batch_size, -1, num_classes])
@@ -99,6 +101,8 @@ class DetBenchPredict(nn.Module):
         self.soft_nms = model.config.soft_nms
 
     def forward(self, x, img_info: Optional[Dict[str, torch.Tensor]] = None):
+        #print(img_info)
+        #start =time.time()
         class_out, box_out = self.model(x)
         class_out, box_out, indices, classes = _post_process(
             class_out, box_out, num_levels=self.num_levels, num_classes=self.num_classes,
@@ -107,10 +111,17 @@ class DetBenchPredict(nn.Module):
             img_scale, img_size = None, None
         else:
             img_scale, img_size = img_info['img_scale'], img_info['img_size']
-        return _batch_detection(
+        #print( 'out post process',class_out.size(), box_out.size(), indices.size(), classes.size())
+        #print(_batch_detection(
+        #    x.shape[0], class_out, box_out, self.anchors.boxes, indices, classes,
+        #    img_scale, img_size, max_det_per_image=self.max_det_per_image, soft_nms=self.soft_nms
+        #).size())
+        _batch_det = _batch_detection(
             x.shape[0], class_out, box_out, self.anchors.boxes, indices, classes,
             img_scale, img_size, max_det_per_image=self.max_det_per_image, soft_nms=self.soft_nms
         )
+        #print(time.time()-start)
+        return _batch_det
 
 
 class DetBenchTrain(nn.Module):

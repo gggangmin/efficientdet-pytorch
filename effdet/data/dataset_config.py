@@ -14,6 +14,15 @@ class CocoCfg:
     num_classes: int = 80
     splits: Dict[str, dict] = None
 
+@dataclass
+class AirCfg:
+  variant: str = None
+  parser: str = 'air'
+  num_classes: int = 2
+  splits: Dict[str, dict] = field(default_factory=lambda:dict(
+    val=dict(ann_filename='annotations/instances_val.json', img_dir='images', has_labels=True),
+  ))
+
 
 @dataclass
 class Coco2017Cfg(CocoCfg):

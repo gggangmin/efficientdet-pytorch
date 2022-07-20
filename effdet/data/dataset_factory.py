@@ -12,7 +12,7 @@ from .dataset import DetectionDatset
 from .parsers import create_parser
 
 
-def create_dataset(name, root, splits=('train', 'val')):
+def create_dataset(name, root, splits=('train', 'val'),id_gpu = 0):
     if isinstance(splits, str):
         splits = (splits,)
     name = name.lower()
@@ -37,6 +37,41 @@ def create_dataset(name, root, splits=('train', 'val')):
                 data_dir=root / Path(split_cfg['img_dir']),
                 parser=create_parser(dataset_cfg.parser, cfg=parser_cfg),
             )
+    elif name.startswith('split_coco'): # split coco 데이터셋
+        if 'coco2014' in name:
+            dataset_cfg = Coco2014Cfg()
+        else:
+            dataset_cfg = Coco2017Cfg()
+        for s in splits: # val
+            if s not in dataset_cfg.splits:
+                raise RuntimeError(f'{s} split not found in config')
+            split_cfg = dataset_cfg.splits[s]
+            ann_file = root / split_cfg['ann_filename']
+            parser_cfg = CocoParserCfg(
+                ann_filename=ann_file,
+                has_labels=split_cfg['has_labels']
+            )
+            datasets[s] = dataset_cls(
+                data_dir=root / Path(split_cfg['img_dir']),
+                parser=create_parser(dataset_cfg.parser, cfg=parser_cfg),
+            )
+
+    elif name.startswith('air'): # unmanned air 데이터셋
+        dataset_cfg = AirCfg()
+        for s in splits: # val
+
+            split_cfg = dataset_cfg.splits[s]
+            ann_file = root / split_cfg['ann_filename']
+            parser_cfg = AirParserCfg(
+                ann_filename=ann_file,
+                has_labels=split_cfg['has_labels']
+            )
+            datasets[s] = dataset_cls(
+                data_dir=root / Path(split_cfg['img_dir']),
+                parser=create_parser(dataset_cfg.parser, cfg=parser_cfg),
+            )
+
+
     elif name.startswith('voc'):
         if 'voc0712' in name:
             dataset_cfg = Voc0712Cfg()
